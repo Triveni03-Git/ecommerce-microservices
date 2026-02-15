@@ -1,0 +1,199 @@
+openapi: 3.0.0
+info:
+  title: E-Commerce Microservices API
+  version: 1.0.0
+  description: Microservices-based E-commerce Backend with API Gateway
+
+servers:
+  - url: http://localhost:5000
+    description: API Gateway
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    UserRegister:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          example: USER
+
+    UserLogin:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    Product:
+      type: object
+      required:
+        - name
+        - description
+        - price
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        createdBy:
+          type: string
+
+paths:
+
+  /auth/register:
+    post:
+      summary: Register new user
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+      responses:
+        '201':
+          description: User registered successfully
+        '400':
+          description: Bad request
+
+  /auth/login:
+    post:
+      summary: Login user
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: JWT token returned
+        '401':
+          description: Invalid credentials
+
+  /auth/validate-token:
+    get:
+      summary: Validate JWT token
+      tags:
+        - Auth
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Token is valid
+        '401':
+          description: Invalid token
+
+  /products:
+    post:
+      summary: Create product (ADMIN only)
+      tags:
+        - Products
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Product created
+        '401':
+          description: Unauthorized
+
+    get:
+      summary: Get all products
+      tags:
+        - Products
+      responses:
+        '200':
+          description: List of products
+
+  /products/{id}:
+    get:
+      summary: Get product by ID
+      tags:
+        - Products
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product found
+        '404':
+          description: Not found
+
+    put:
+      summary: Update product (ADMIN only)
+      tags:
+        - Products
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Product updated
+        '401':
+          description: Unauthorized
+
+    delete:
+      summary: Delete product (ADMIN only)
+      tags:
+        - Products
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product deleted
+        '403':
+          description: Admin only
+        '401':
+          description: Unauthorized
