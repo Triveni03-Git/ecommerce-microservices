@@ -1,6 +1,6 @@
 const jwt=require('jsonwebtoken');
 
-module.exports=(req,res,next) => {
+const authenticate=(req,res,next) => {
   const token=req.headers.authorization?.split(' ')[1];
   if(!token){
     return res.status(401).json({message:'Token is required'})
@@ -14,3 +14,4 @@ module.exports=(req,res,next) => {
     res.status(401).json({message:'Invalid token'})
   } 
 }
+module.exports=authenticate;

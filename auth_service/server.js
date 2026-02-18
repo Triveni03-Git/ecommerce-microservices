@@ -1,7 +1,7 @@
 const express=require('express');
 const mongoose=require('mongoose');
 const cors=require('cors');
-require('dotenv').config({path:'../.env'});
+require('dotenv').config();
 const authRoutes=require('./routes');
 const app=express();
 app.use(express.json());

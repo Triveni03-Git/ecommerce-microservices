@@ -1,0 +1,42 @@
+services:
+  auth_service:
+    container_name: auth_service
+    build: ./auth_service
+    ports:
+      - "${PORT_AUTH}:${PORT_AUTH}"
+    env_file:
+      - ./.env
+    develop:
+      watch:
+        - action: sync
+          path: ./auth_service
+          target: /app
+
+  product_service:
+    container_name: product_service
+    build: ./product_service
+    ports:
+      - "${PORT_PRODUCT}:${PORT_PRODUCT}"
+    env_file:
+      - ./.env
+    develop:
+      watch:
+        - action: sync
+          path: ./product_service
+          target: /app
+
+  api_gateway:
+    container_name: api_gateway
+    build: ./api-gateway
+    ports:
+      - "${PORT_GATEWAY}:${PORT_GATEWAY}"
+    env_file:
+      - ./.env
+    develop:
+      watch:
+        - action: sync
+          path: ./api-gateway
+          target: /app
+    depends_on:
+      - auth_service
+      - product_service
